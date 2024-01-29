@@ -1,0 +1,28 @@
+#Basic workflow
+
+
+name: "Newman Tests"
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: postman/newman
+    steps:  
+      - name: Install newman
+        run: |
+          npm install -g newman
+          npm install -g newman-reporter-htmlextra
+
+      - name: Make Directory for results
+        run: mkdir -p testResults
+
+      - name: Run API Tests
+        run: newman run "Restful Booker BVT.postman_collection.json" -e Production.postman_environment.json -r htmlextra testResults/htmlreport.html --reporter-htmlextra-darkTheme  > testResults/runreport1.html  
+
+      - name: Output the run Details
+        uses: actions/upload-artifact@v2
+        with:
+          name: RunReports
+          path: testResults
